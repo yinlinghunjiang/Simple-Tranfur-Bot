@@ -1,0 +1,4 @@
+miraicle >= 0.3.10
+requests == 2.27.1
+Flask == 2.1.2
+urllib3 == 1.26.9
