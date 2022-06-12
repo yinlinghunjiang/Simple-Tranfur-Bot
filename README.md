@@ -18,9 +18,9 @@ A simple tranfur QQBot powered by Tail Api
     nano /config/main.conf 
     cd ../
     pip install -r requirements.txt
-    screen -r botpy
-    python tranfur.py
     screen -r transfur
+    python tranfur.py
+    screen -r botpy
     python bot.py
 
 Enjoy it~
@@ -33,15 +33,16 @@ Enjoy it~
     cd ../
     pip install -r requirements.txt
     python tranfur.py
-	python bot.py(不要关闭tranfur.py的黑框框)     
+	python bot.py(不要关闭tranfur.py的黑框框) 
+
    对于Linux系统
 
     nano /config/main.conf 
     cd ../
     pip install -r requirements.txt
-    screen -r botpy
-    python tranfur.py
     screen -r transfur
+    python tranfur.py
+    screen -r botpy
     python bot.py
 
 由于本人还很菜，所以有什么代码问题欢迎Issue和pr
