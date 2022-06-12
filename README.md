@@ -1,7 +1,7 @@
 # Simple-Tranfur-Bot
 A simple tranfur QQBot powered by Tail Api
 
-一个简单，开箱即用的吸毛Bot
+一个简单，开箱即用的吸毛Bot  [ [帮助文档](https://www.uwpg.xyz/docs "帮助文档") ]
 
 ## Quick start: ##
 <br>
@@ -46,4 +46,5 @@ Enjoy it~
 
 由于本人还很菜，所以有什么代码问题欢迎Issue和pr
 
-That's it
+
+**如果您觉得本项目对您有帮助，也烦请您点个star，您的star是我继续维护下去的动力，谢谢！**
