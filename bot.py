@@ -1,7 +1,11 @@
 import miraicle
+import urllib3
 import requests
+import datetime
 import json
+import traceback
 from configparser import ConfigParser# 读取配置, 加载配置项
+import blacklistsutil
 def getport():
     config = ConfigParser()
     config.read('./config/main.conf', encoding='UTF-8')
@@ -32,6 +36,10 @@ def DailyFursuitRand():
     return json_str
 @miraicle.Mirai.receiver('GroupMessage')
 def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
+    if msg.plain in ['help', '.help','/help']:
+            helper = ConfigParser()
+            helper.read('./config/main.conf', encoding='UTF-8')
+            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain(helper['mirai']['help'])])
         #if msg.plain in [str("来只 "+re.fullmatch('(?<=来只 ).*$', msg.plain)[0])]:
     try:
         if msg.plain in ["来只 "+msg.plain.split(" ")[1]]:
@@ -60,11 +68,19 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Image(url=thumb)])
+        if msg.plain in ["查云黑 "+msg.plain.split(" ")[1]]:
+                # r =  requests.get("http://192.168.1.12:9000/getFursuitByName/"+str(re.fullmatch('(?<=来只 ).*$', msg.plain)[0]))
+                # json_str = json.loads(r.text)
+            qq=msg.plain.split(" ")[1]
+            try:
+                level=blacklistsutil.blacklist(qq)[0]
+                time=blacklistsutil.blacklist(qq)[1]
+                reason=blacklistsutil.blacklist(qq)[2]
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('查询QQ：'+qq+"\n等级："+str(level)+"\n上黑时间："+time+"\n上黑原因："+reason)])
+            except IndexError as outoflisterror:
+                notfound=blacklistsutil.blacklist(qq)[0]
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('查询QQ：'+qq+"\n"+notfound)])
     except IndexError as e:
-        if msg.plain in ['help', '.help','/help']:
-            helper = ConfigParser()
-            helper.read('./config/main.conf', encoding='UTF-8')
-            bot.send_group_msg(qq=msg.sender, msg=helper['mirai']['help'])
         if msg.plain in ['来只毛','.transfur']:
             json_raw=getFursuitRand()
             furid = json_raw['data']['id']
