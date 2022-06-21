@@ -50,7 +50,7 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：模糊\n'),miraicle.Image(url=thumb)])
-        if msg.plain in ["查毛图 "+msg.plain.split(" ")[1]]:
+        if msg.plain in ["找毛图 "+msg.plain.split(" ")[1]]:
             json_raw = getFursuitByID(msg.plain.split(" ")[1])
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
@@ -87,7 +87,7 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：全局随机\n'),miraicle.Image(url=thumb)])
-        if msg.plain in ["每日鉴毛"]:
+        if msg.plain in ["随机每日鉴毛","每日鉴毛"]:
             json_raw = DailyFursuitRand()
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
@@ -104,12 +104,41 @@ def hello_to_friend(bot: miraicle.Mirai, msg: miraicle.FriendMessage):
         helper = ConfigParser()
         helper.read('./config/main.conf', encoding='UTF-8')
         bot.send_friend_msg(qq=msg.sender, msg=helper['mirai']['help'])
-        
+@miraicle.Mirai.filter('BlacklistFilter')
+def blacklist(bot: miraicle.Mirai, msg: miraicle.GroupMessage, flt: miraicle.BlacklistFilter):
+    try:
+        if msg.plain in ["拉黑 "+msg.plain.split(" ")[1]]:
+            try:
+                foo = ConfigParser()
+                foo.read('./config/main.conf', encoding='UTF-8')
+                level = foo['admin'][str(msg.sender)]
+                if int(level) >= 4:
+                    qq=msg.plain.split(" ")[1]
+                    flt.append(qq)
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('添加成功。')])
+            except KeyError as ke:
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限≥4')])
+        if msg.plain in ["解除拉黑 "+msg.plain.split(" ")[1]]:
+            try:
+                foo = ConfigParser()
+                foo.read('./config/main.conf', encoding='UTF-8')
+                level = foo['admin'][str(msg.sender)]
+                if int(level) >= 4:
+                    qq=msg.plain.split(" ")[1]
+                    flt.remove(qq)
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('移除成功。')])
+            except KeyError as ke:
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限≥4')])
+    except IndexError as ie:
+        pass
+
+
 miraiconf = ConfigParser()
 miraiconf.read('./config/main.conf', encoding='UTF-8')
 qq = miraiconf['mirai']['qq']       # 你登录的机器人 QQ 号
 verify_key = miraiconf['mirai']['verifykey']     # 你在 setting.yml 中设置的 verifyKey
 port = miraiconf['mirai']['port']                 # 你在 setting.yml 中设置的 port (http)
-
+admin = miraiconf['mirai']['port'] 
 bot = miraicle.Mirai(qq=qq, verify_key=verify_key, port=port)
+bot.set_filter(miraicle.BlacklistFilter('./config/blacklist.json'))
 bot.run()
