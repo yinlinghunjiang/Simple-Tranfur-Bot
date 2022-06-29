@@ -1,9 +1,6 @@
 import miraicle
-import urllib3
 import requests
-import datetime
 import json
-import traceback
 from configparser import ConfigParser# 读取配置, 加载配置项
 import blacklistsutil
 import mcsmapi
@@ -162,7 +159,7 @@ miraiconf.read('./config/main.conf', encoding='UTF-8')
 qq = miraiconf['mirai']['qq']       # 你登录的机器人 QQ 号
 verify_key = miraiconf['mirai']['verifykey']     # 你在 setting.yml 中设置的 verifyKey
 port = miraiconf['mirai']['port']                 # 你在 setting.yml 中设置的 port (http)
-admin = miraiconf['mirai']['port'] 
+admin = miraiconf['mirai']['port']
 bot = miraicle.Mirai(qq=qq, verify_key=verify_key, port=port)
 bot.set_filter(miraicle.BlacklistFilter('./config/blacklist.json'))
 bot.run()
