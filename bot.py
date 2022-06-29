@@ -3,7 +3,6 @@ import requests
 import json
 from configparser import ConfigParser# 读取配置, 加载配置项
 import blacklistsutil
-import mcsmapi
 import signutil
 def getport():
     config = ConfigParser()

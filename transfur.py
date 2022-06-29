@@ -5,8 +5,6 @@ from flask_bootstrap import Bootstrap
 import datetime
 import hashlib
 import urllib3
-import os
-import traceback
 from configparser import ConfigParser
 
 app = Flask(__name__)
@@ -52,18 +50,6 @@ def getFursuitByName(name):
     resp=http.request('GET', 'https://api.tail.icu/api/v2/getFursuitByName?qq='+str(qqfac())+'&timestamp='+str(ts)+"&sign="+prsign+"&name="+name)
     print(resp.data.decode('UTF-8')) # get方式请求
     return str(resp.data.decode('UTF-8'))
-@app.route('/getimg/getFursuitByID/<fid>', methods=['GET'])
-def getFursuitByIDimg(fid): # get方式请求
-    data = json.loads(getFursuitByID(fid))
-    return "<img src='"+data['data']['url']+"'>"
-@app.route('/getimg/getFursuitRand', methods=['GET'])
-def getFursuitRandimg(): # get方式请求
-    data = json.loads(getFursuitRand())
-    return "<img src='"+data['data']['url']+"'>"
-@app.route('/getimg/getFursuitByName/<name>', methods=['GET'])
-def getFursuitByNameimg(name): # get方式请求
-    data = json.loads(getFursuitByName(name))
-    return "<img src='"+data['data']['url']+"'>"
 @app.route('/DailyFursuit/Rand/', methods=['GET'])
 def DailyFursuitRand():
     ts=datetime.datetime.now().timestamp()
@@ -88,18 +74,6 @@ def DailyFursuitByID(furid):
     resp=http.request('GET', 'https://api.tail.icu/api/v2/DailyFursuit/id?qq='+str(qqfac())+'&timestamp='+str(ts)+"&sign="+prsign+"&id="+furid)
     print(resp.data.decode('UTF-8')) # get方式请求
     return str(resp.data.decode('UTF-8'))
-@app.route('/getimg/DailyFursuit/Rand', methods=['GET'])
-def getDailyFursuitRandimg(): # get方式请求
-    data = json.loads(DailyFursuitRand())
-    return "<img src='"+data['data']['url']+"'>"
-@app.route('/getimg/DailyFursuit/name/<name>', methods=['GET'])
-def getDailyFursuitByNameimg(name): # get方式请求
-    data = json.loads(DailyFursuitByName(name))
-    return "<img src='"+data['data']['url']+"'>"
-@app.route('/getimg/DailyFursuit/id/<furid>', methods=['GET'])
-def getDailyFursuitByIDimg(furid): # get方式请求
-    data = json.loads(DailyFursuitByID(furid))
-    return "<img src='"+data['data']['url']+"'>"
 @app.errorhandler(KeyError)
 def KeyError_error(e):
     return {'code':403,'message':'传参错误，请检查传参'}
