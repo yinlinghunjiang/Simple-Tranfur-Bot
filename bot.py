@@ -6,6 +6,8 @@ import json
 import traceback
 from configparser import ConfigParser# 读取配置, 加载配置项
 import blacklistsutil
+import mcsmapi
+import signutil
 def getport():
     config = ConfigParser()
     config.read('./config/main.conf', encoding='UTF-8')
@@ -87,12 +89,34 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：全局随机\n'),miraicle.Image(url=thumb)])
+        if msg.plain in ['签到','.签到','/签到']:
+            raw=signutil.signup(msg.sender)
+            if raw[0] == 'Already signed':
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('您已经签到过了')])
+            else:
+                coin=raw[0]
+                signtimes=raw[1]
+                last_sign=raw[2]
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 签到成功 ---\n爪币数:'+str(coin)+'\n签到次数:'+str(signtimes)+"\n签到时间:"+last_sign)])
         if msg.plain in ["随机每日鉴毛","每日鉴毛"]:
             json_raw = DailyFursuitRand()
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Image(url=thumb)])
+        if msg.plain in ["服务器状态",".status"]:
+            try:
+                bar = ConfigParser()
+                bar.read('./config/main.conf', encoding='UTF-8')
+                level = bar['admin'][str(msg.sender)]
+                if int(level) > 4:
+                    api=mcsmapi.apis('http://192.168.1.12:23333/api/','7310b8070617431eb9ba191a70bce730')
+                    result=api.overview()
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 服务器状态 ---\n面板版本:'+result[0]+'\n内存:'+str(result[1])+'\n运行路径:'+result[2]+'\n登录次数:'+str(result[3])+
+                        '\n非法登录:'+str(result[4])+'\n登录失败:'+str(result[5])+'\n系统时间:'+result[6]+'\n总内存:'+str(result[7])+'\n空闲内存:'+str(result[8])+'\n系统类型:'+result[9]+'\n系统版本:'+
+                        result[10]+'\nnode版本:'+result[11]+'\n主机名:'+result[12]+'\n负载:'+str(result[13])+'\n系统架构:'+result[15]+'\n开机时间:'+str(result[16]))])
+            except KeyError as ker:
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限＞4')])
     except KeyError as er:
         helper = ConfigParser()
         helper.read('./config/main.conf', encoding='UTF-8')
