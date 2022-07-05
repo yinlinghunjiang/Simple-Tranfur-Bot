@@ -4,6 +4,7 @@ import json
 from configparser import ConfigParser# 读取配置, 加载配置项
 import blacklistsutil
 import signutil
+import transfur
 def getport():
     config = ConfigParser()
     config.read('./config/main.conf', encoding='UTF-8')
@@ -148,4 +149,5 @@ port = miraiconf['mirai']['port']                 # 你在 setting.yml 中设置
 admin = miraiconf['mirai']['port']
 bot = miraicle.Mirai(qq=qq, verify_key=verify_key, port=port)
 bot.set_filter(miraicle.BlacklistFilter('./config/blacklist.json'))
+transfur.run_app()
 bot.run()

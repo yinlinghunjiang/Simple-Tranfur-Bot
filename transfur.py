@@ -6,7 +6,7 @@ import datetime
 import hashlib
 import urllib3
 from configparser import ConfigParser
-
+from threading import Thread
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 def sign(path,time):
@@ -77,9 +77,13 @@ def DailyFursuitByID(furid):
 @app.errorhandler(KeyError)
 def KeyError_error(e):
     return {'code':403,'message':'传参错误，请检查传参'}
-config = ConfigParser()
-config.read('./config/main.conf', encoding='UTF-8')
-app.debug = config['flaskconf']['debug']
-ip=config['flaskconf']['blind']
-port=config['flaskconf']['port']
-app.run(ip, int(port))
+def main():
+  config = ConfigParser()
+  config.read('./config/main.conf', encoding='UTF-8')
+  app.debug = config['flaskconf']['debug']
+  ip=config['flaskconf']['blind']
+  port=config['flaskconf']['port']
+  app.run(ip, int(port),use_reloader=False)
+def run_app():
+    t = Thread(target=main)
+    t.start()

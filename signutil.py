@@ -13,7 +13,7 @@ def signup(qq:str):
         tsnow=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         ts=datetime.datetime.strptime(tsnow, "%Y-%m-%d %H:%M:%S")
         tspast=datetime.datetime.strptime(str(last_sign),"%Y-%m-%d %H:%M:%S")
-        if (ts-tspast).days > 1:
+        if (ts-tspast).days > 0.5:
             coin = coin + random.randint(100,200)
             signtimes += 1
             last_sign =datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

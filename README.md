@@ -9,21 +9,14 @@ A simple tranfur QQBot powered by miraicle
 <br>
   For Windows 
 
-    1. Edit /config/main.conf 
-    2. cd ../
-    3. pip install -r requirements.txt
-    4. python tranfur.py
-	5. python bot.py(Don't stop running tranfur.py)
+    Edit /config/main.conf 
+    cd ../
+    pip install -r requirements.txt
+	python bot.py
 
   For Linux
 
-    1. nano /config/main.conf 
-    2. cd ../
-    3. pip install -r requirements.txt
-    4. screen -r transfur
-    5. python tranfur.py
-    6. screen -r botpy
-    7. python bot.py
+    sh run.sh
 
 Enjoy it~
 
@@ -34,18 +27,11 @@ Enjoy it~
     编辑/config/main.conf 
     cd ../
     pip install -r requirements.txt
-    python tranfur.py
-	python bot.py(不要关闭tranfur.py的黑框框) 
+	python bot.py
 
    对于Linux系统
 
-    nano /config/main.conf 
-    cd ../
-    pip install -r requirements.txt
-    screen -r transfur
-    python tranfur.py
-    screen -r botpy
-    python bot.py
+    sh run.sh
 ## 功能列表
 <details>
 <summary>已实现的功能</summary>
@@ -76,6 +62,12 @@ Enjoy it~
 20220629更新：
 
 - 添加 签到系统
+
+
+20220705更新：
+
+- 添加 Dockerfile
+- 合并代码
 
 由于本人还很菜，所以有什么代码问题欢迎Issue和pr
 
