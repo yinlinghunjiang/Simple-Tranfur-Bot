@@ -33,9 +33,18 @@ def DailyFursuitRand():
     r =  requests.get("http://127.0.0.1:"+getport()+"/DailyFursuit/Rand/")
     json_str = json.loads(r.text)
     return json_str
+def permutil(qq:str,req:int):
+    try:
+        foo = ConfigParser()
+        foo.read('./config/main.conf', encoding='UTF-8')
+        level = foo['admin'][str(qq)]
+        if int(level) >= req:
+            return True
+    except KeyError as ke:
+        return False
 @miraicle.Mirai.receiver('GroupMessage')
 def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
-    if msg.plain in ['help', '.help','/help']:
+    if msg.plain in ['help', '.help','/help','~help','帮助','.帮助','/帮助','~帮助']:
             helper = ConfigParser()
             helper.read('./config/main.conf', encoding='UTF-8')
             bot.send_group_msg(group=msg.group, msg=[miraicle.Plain(helper['mirai']['help'])])
@@ -79,6 +88,12 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
             except IndexError as outoflisterror:
                 notfound=blacklistsutil.blacklist(qq)[0]
                 bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('查询QQ：'+qq+"\n"+notfound)])
+        if msg.plain.startswith(".upload "):
+            if permutil(msg.sender,2) == True:
+                if msg.first_image != None:
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.Plain("上传完毕: \n"+str(msg.images[0])[51:len(str(msg.images[0]))-1])])
+            else:
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限≥2')])
     except IndexError as e:
         if msg.plain in ['来只毛','.transfur']:
             json_raw=getFursuitRand()
@@ -86,7 +101,7 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：全局随机\n'),miraicle.Image(url=thumb)])
-        if msg.plain in ['签到','.签到','/签到']:
+        if msg.plain in ['签到','.签到','/签到','~签到']:
             raw=signutil.signup(msg.sender)
             if raw[0] == 'Already signed':
                 bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('您已经签到过了')])
@@ -101,6 +116,22 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Image(url=thumb)])
+    
+        if msg.plain in [".lists"]:
+            if permutil(msg.sender,5) == True:
+                    groups={}
+                    rawdata=bot.group_list()
+                    for i in range(0,10001,1):
+                        try:
+                            groups[rawdata['data'][i]['id']]=[rawdata['data'][i]['name'],rawdata['data'][i]['permission']]
+                        except:
+                            break
+                    string=""
+                    for x in groups.keys():
+                       string += "\n"+groups[x][0]+" "+groups[x][1]
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('已加入的群聊:\n'+string)])
+            else:
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限＝5')])
     except KeyError as er:
         helper = ConfigParser()
         helper.read('./config/main.conf', encoding='UTF-8')
@@ -108,7 +139,7 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
 
 @miraicle.Mirai.receiver('FriendMessage')
 def hello_to_friend(bot: miraicle.Mirai, msg: miraicle.FriendMessage):
-    if msg.plain in ['help', '.help','/help']:
+    if msg.plain in ['help', '.help','/help','~help','帮助','.帮助','/帮助','~帮助']:
         helper = ConfigParser()
         helper.read('./config/main.conf', encoding='UTF-8')
         bot.send_friend_msg(qq=msg.sender, msg=helper['mirai']['help'])
@@ -116,26 +147,18 @@ def hello_to_friend(bot: miraicle.Mirai, msg: miraicle.FriendMessage):
 def blacklist(bot: miraicle.Mirai, msg: miraicle.GroupMessage, flt: miraicle.BlacklistFilter):
     try:
         if msg.plain in ["拉黑 "+msg.plain.split(" ")[1]]:
-            try:
-                foo = ConfigParser()
-                foo.read('./config/main.conf', encoding='UTF-8')
-                level = foo['admin'][str(msg.sender)]
-                if int(level) >= 4:
+            if permutil(msg.sender,4) == True:
                     qq=msg.plain.split(" ")[1]
                     flt.append(qq)
                     bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('添加成功。')])
-            except KeyError as ke:
+            else:
                 bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限≥4')])
         if msg.plain in ["解除拉黑 "+msg.plain.split(" ")[1]]:
-            try:
-                foo = ConfigParser()
-                foo.read('./config/main.conf', encoding='UTF-8')
-                level = foo['admin'][str(msg.sender)]
-                if int(level) >= 4:
+            if permutil(msg.sender,4) == True:
                     qq=msg.plain.split(" ")[1]
                     flt.remove(qq)
                     bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('移除成功。')])
-            except KeyError as ke:
+            else:
                 bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限≥4')])
     except IndexError as ie:
         pass
@@ -146,7 +169,7 @@ miraiconf.read('./config/main.conf', encoding='UTF-8')
 qq = miraiconf['mirai']['qq']       # 你登录的机器人 QQ 号
 verify_key = miraiconf['mirai']['verifykey']     # 你在 setting.yml 中设置的 verifyKey
 port = miraiconf['mirai']['port']                 # 你在 setting.yml 中设置的 port (http)
-admin = miraiconf['mirai']['port']
+admin = miraiconf['mirai']['port'] 
 bot = miraicle.Mirai(qq=qq, verify_key=verify_key, port=port)
 bot.set_filter(miraicle.BlacklistFilter('./config/blacklist.json'))
 transfur.run_app()
