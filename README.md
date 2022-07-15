@@ -16,7 +16,12 @@ A simple tranfur QQBot powered by miraicle
 
   For Linux
 
-    sh run.sh
+    Edit /config/main.conf 
+    cd ../
+    pip install -r requirements.txt
+	python bot.py
+    
+
 
 Enjoy it~
 
@@ -24,14 +29,17 @@ Enjoy it~
 <br>
    对于Windows系统
 
-    编辑/config/main.conf 
+    编辑配置文件 /config/main.conf 
     cd ../
     pip install -r requirements.txt
 	python bot.py
 
    对于Linux系统
 
-    sh run.sh
+    编辑配置文件 /config/main.conf 
+    cd ../
+    pip install -r requirements.txt
+	python bot.py
 ## 功能列表
 <details>
 <summary>已实现的功能</summary>
