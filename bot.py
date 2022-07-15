@@ -1,38 +1,9 @@
 import miraicle
-import requests
-import json
 from configparser import ConfigParser# 读取配置, 加载配置项
 import blacklistsutil
 import signutil
-import transfur
-def getport():
-    config = ConfigParser()
-    config.read('./config/main.conf', encoding='UTF-8')
-    return str(config['flaskconf']['port'])
-def getFursuitRand():
-    r =  requests.get("http://127.0.0.1:"+getport()+"/getFursuitRand")
-    json_str = json.loads(r.text)
-    return json_str
-def getFursuitByName(name):
-    r =  requests.get("http://127.0.0.1:"+getport()+"/getFursuitByName/"+name)
-    json_str = json.loads(r.text)
-    return json_str
-def getFursuitByID(furid):
-    r =  requests.get("http://127.0.0.1:"+getport()+"/getFursuitByID/"+furid)
-    json_str = json.loads(r.text)
-    return json_str
-def DailyFursuitByID(furid):
-    r =  requests.get("http://127.0.0.1:"+getport()+"/DailyFursuit/id/"+furid)
-    json_str = json.loads(r.text)
-    return json_str
-def DailyFursuitByName(name):
-    r =  requests.get("http://127.0.0.1:"+getport()+"/DailyFursuit/name/"+name)
-    json_str = json.loads(r.text)
-    return json_str
-def DailyFursuitRand():
-    r =  requests.get("http://127.0.0.1:"+getport()+"/DailyFursuit/Rand/")
-    json_str = json.loads(r.text)
-    return json_str
+import transfurutil
+
 def permutil(qq:str,req:int):
     try:
         foo = ConfigParser()
@@ -51,27 +22,25 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
         #if msg.plain in [str("来只 "+re.fullmatch('(?<=来只 ).*$', msg.plain)[0])]:
     try:
         if msg.plain in ["来只 "+msg.plain.split(" ")[1]]:
-                # r =  requests.get("http://192.168.1.12:9000/getFursuitByName/"+str(re.fullmatch('(?<=来只 ).*$', msg.plain)[0]))
-                # json_str = json.loads(r.text)
-            json_raw = getFursuitByName(msg.plain.split(" ")[1])
+            json_raw = api.getFursuitByName(msg.plain.split(" ")[1])
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：模糊\n'),miraicle.Image(url=thumb)])
         if msg.plain in ["找毛图 "+msg.plain.split(" ")[1]]:
-            json_raw = getFursuitByID(msg.plain.split(" ")[1])
+            json_raw = api.getFursuitByID(msg.plain.split(" ")[1])
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：精确\n'),miraicle.Image(url=thumb)])
         if msg.plain in [msg.plain.split(" ")[0]+" 期每日鉴毛"]:
-            json_raw = DailyFursuitByID(msg.plain.split(" ")[0])
+            json_raw = api.DailyFursuitByID(msg.plain.split(" ")[0])
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Image(url=thumb)])
         if msg.plain in [msg.plain.split(" ")[0]+" 的每日鉴毛"]:
-            json_raw = DailyFursuitByName(msg.plain.split(" ")[0])
+            json_raw = api.DailyFursuitByName(msg.plain.split(" ")[0])
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
@@ -91,33 +60,33 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
         if msg.plain.startswith(".upload "):
             if permutil(msg.sender,2) == True:
                 if msg.first_image != None:
-                    bot.send_group_msg(group=msg.group, msg=[miraicle.Plain("上传完毕: \n"+str(msg.images[0])[51:len(str(msg.images[0]))-1])])
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(" 上传完毕: \n"+str(msg.images[0])[51:len(str(msg.images[0]))-1])])
             else:
-                    bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限≥2')])
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 权限不足，执行该命令需要权限≥2')])
     except IndexError as e:
         if msg.plain in ['来只毛','.transfur']:
-            json_raw=getFursuitRand()
+            json_raw=api.getFursuitRand()
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
-            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：全局随机\n'),miraicle.Image(url=thumb)])
+            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('\n--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：全局随机\n'),miraicle.Image(url=thumb)])
         if msg.plain in ['签到','.签到','/签到','~签到']:
             raw=signutil.signup(msg.sender)
             if raw[0] == 'Already signed':
-                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('您已经签到过了')])
+                bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 您已经签到过了')])
             else:
                 coin=raw[0]
                 signtimes=raw[1]
                 last_sign=raw[2]
-                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 签到成功 ---\n爪币数:'+str(coin)+'\n签到次数:'+str(signtimes)+"\n签到时间:"+last_sign)])
+                bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain('--- 签到成功 ---\n爪币数:'+str(coin)+'\n签到次数:'+str(signtimes)+"\n签到时间:"+last_sign)])
         if msg.plain in ["随机每日鉴毛","每日鉴毛"]:
-            json_raw = DailyFursuitRand()
+            json_raw = api.DailyFursuitRand()
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Image(url=thumb)])
     
-        if msg.plain in [".lists"]:
+        if msg.plain in [".lists",".群列表"]:
             if permutil(msg.sender,5) == True:
                     groups={}
                     rawdata=bot.group_list()
@@ -142,7 +111,7 @@ def hello_to_friend(bot: miraicle.Mirai, msg: miraicle.FriendMessage):
     if msg.plain in ['help', '.help','/help','~help','帮助','.帮助','/帮助','~帮助']:
         helper = ConfigParser()
         helper.read('./config/main.conf', encoding='UTF-8')
-        bot.send_friend_msg(qq=msg.sender, msg=helper['mirai']['help'])
+        bot.send_friend_msg(qq=msg.sender, msg=[miraicle.At(msg.sender),helper['mirai']['help']])
 @miraicle.Mirai.filter('BlacklistFilter')
 def blacklist(bot: miraicle.Mirai, msg: miraicle.GroupMessage, flt: miraicle.BlacklistFilter):
     try:
@@ -150,16 +119,16 @@ def blacklist(bot: miraicle.Mirai, msg: miraicle.GroupMessage, flt: miraicle.Bla
             if permutil(msg.sender,4) == True:
                     qq=msg.plain.split(" ")[1]
                     flt.append(qq)
-                    bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('添加成功。')])
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 添加成功。')])
             else:
-                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限≥4')])
+                bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 权限不足，执行该命令需要权限≥4')])
         if msg.plain in ["解除拉黑 "+msg.plain.split(" ")[1]]:
             if permutil(msg.sender,4) == True:
                     qq=msg.plain.split(" ")[1]
                     flt.remove(qq)
-                    bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('移除成功。')])
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 移除成功。')])
             else:
-                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限≥4')])
+                bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 权限不足，执行该命令需要权限≥4')])
     except IndexError as ie:
         pass
 
@@ -172,5 +141,7 @@ port = miraiconf['mirai']['port']                 # 你在 setting.yml 中设置
 admin = miraiconf['mirai']['port'] 
 bot = miraicle.Mirai(qq=qq, verify_key=verify_key, port=port)
 bot.set_filter(miraicle.BlacklistFilter('./config/blacklist.json'))
-transfur.run_app()
+api=transfurutil.Tailapi("./config/main.conf")
 bot.run()
+
+

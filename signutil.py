@@ -10,13 +10,13 @@ def signup(qq:str):
             signtimes=data2['sign_times']
             last_sign=data2['last_sign']
             f.close()
-        tsnow=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        ts=datetime.datetime.strptime(tsnow, "%Y-%m-%d %H:%M:%S")
-        tspast=datetime.datetime.strptime(str(last_sign),"%Y-%m-%d %H:%M:%S")
+        tsnow=datetime.datetime.now().strftime("%Y-%m-%d")
+        ts=datetime.datetime.strptime(tsnow, "%Y-%m-%d")
+        tspast=datetime.datetime.strptime(str(last_sign),"%Y-%m-%d")
         if (ts-tspast).days > 0.5:
             coin = coin + random.randint(100,200)
             signtimes += 1
-            last_sign =datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            last_sign =datetime.datetime.now().strftime("%Y-%m-%d")
             with open("./data/"+str(qq)+".json","w") as f:
                 data={"qq": qq, "coin": coin, "sign_times": signtimes, "last_sign": last_sign}
                 json.dump(data,f)
@@ -30,7 +30,7 @@ def signup(qq:str):
                 'qq' : qq,
                 'coin' : random.randint(0,100),
                 'sign_times' : 1,
-                'last_sign': str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                'last_sign': str(datetime.datetime.now().strftime("%Y-%m-%d"))
             }
             json_str = json.dump(data,f)
             f.close()
