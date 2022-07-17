@@ -7,41 +7,23 @@ A simple tranfur QQBot powered by miraicle
 
 ## Quick start: ##
 <br>
-  For Windows 
-
-    Edit /config/main.conf 
-    cd ../
-    pip install -r requirements.txt
-	python bot.py
-
-  For Linux
 
     Edit /config/main.conf 
     cd ../
     pip install -r requirements.txt
 	python bot.py
     
-
-
-Enjoy it~
-
 ## 快速上手 ##
 <br>
-   对于Windows系统
 
     编辑配置文件 /config/main.conf 
     cd ../
     pip install -r requirements.txt
 	python bot.py
 
-   对于Linux系统
-
-    编辑配置文件 /config/main.conf 
-    cd ../
-    pip install -r requirements.txt
-	python bot.py
 ## 功能列表
 <details>
+
 <summary>已实现的功能</summary>
 
 ### 已实现的常用功能
@@ -50,6 +32,9 @@ Enjoy it~
 - [x] 找毛图 x
 - [x] 每日鉴毛
 - [x] 查云黑
+- [x] 拉黑
+- [x] 群列表
+- [x] 图床
 
 </details>
 

@@ -62,14 +62,14 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
                 if msg.first_image != None:
                     bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(" 上传完毕: \n"+str(msg.images[0])[51:len(str(msg.images[0]))-1])])
             else:
-                    bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 权限不足，执行该命令需要权限≥2')])
+                bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 权限不足，执行该命令需要权限≥2')])
     except IndexError as e:
         if msg.plain in ['来只毛','.transfur']:
             json_raw=api.getFursuitRand()
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
-            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('\n--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：全局随机\n'),miraicle.Image(url=thumb)])
+            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：全局随机\n'),miraicle.Image(url=thumb)])
         if msg.plain in ['签到','.签到','/签到','~签到']:
             raw=signutil.signup(msg.sender)
             if raw[0] == 'Already signed':
@@ -78,7 +78,7 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
                 coin=raw[0]
                 signtimes=raw[1]
                 last_sign=raw[2]
-                bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain('--- 签到成功 ---\n爪币数:'+str(coin)+'\n签到次数:'+str(signtimes)+"\n签到时间:"+last_sign)])
+                bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain('\n--- 签到成功 ---\n爪币数:'+str(coin)+'\n签到次数:'+str(signtimes)+"\n签到时间:"+last_sign)])
         if msg.plain in ["随机每日鉴毛","每日鉴毛"]:
             json_raw = api.DailyFursuitRand()
             furid = json_raw['data']['id']
