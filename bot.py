@@ -79,7 +79,7 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
                 signtimes=raw[1]
                 last_sign=raw[2]
                 bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain('\n--- 签到成功 ---\n爪币数:'+str(coin)+'\n签到次数:'+str(signtimes)+"\n签到时间:"+last_sign)])
-        if msg.plain in ["随机每日鉴毛","每日鉴毛"]:
+        if msg.plain in ["每日鉴毛"]:
             json_raw = api.DailyFursuitRand()
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
@@ -101,6 +101,17 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
                     bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('已加入的群聊:\n'+string)])
             else:
                 bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限＝5')])
+        if msg.plain.startswith(".broadcast "):
+            message=msg.plain.split(" ")[1]
+            if permutil(msg.sender,4) == True:
+                rawdata=bot.group_list()
+                for i in range(0,10001,1):
+                    try:
+                        bot.send_group_msg(group=rawdata['data'][i]['id'], msg=[miraicle.Plain(message)])
+                    except:
+                        break
+            else:
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限＝4')])
     except KeyError as er:
         helper = ConfigParser()
         helper.read('./config/main.conf', encoding='UTF-8')

@@ -72,6 +72,10 @@ A simple tranfur QQBot powered by miraicle
 
 - 重写Tailapi相关组件，封装部分代码
 
+20220718更新：
+
+- 添加广播功能
+
 
 由于本人还很菜，所以有什么代码问题欢迎Issue和pr
 
