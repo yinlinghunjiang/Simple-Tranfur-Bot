@@ -76,6 +76,10 @@ A simple tranfur QQBot powered by miraicle
 
 - 添加广播功能
 
+20220720更新：
+
+- 错误捕捉，添加日志记录
+
 
 由于本人还很菜，所以有什么代码问题欢迎Issue和pr
 

@@ -3,7 +3,8 @@ from configparser import ConfigParser# 读取配置, 加载配置项
 import blacklistsutil
 import signutil
 import transfurutil
-
+import logging
+import datetime
 def permutil(qq:str,req:int):
     try:
         foo = ConfigParser()
@@ -149,10 +150,19 @@ miraiconf.read('./config/main.conf', encoding='UTF-8')
 qq = miraiconf['mirai']['qq']       # 你登录的机器人 QQ 号
 verify_key = miraiconf['mirai']['verifykey']     # 你在 setting.yml 中设置的 verifyKey
 port = miraiconf['mirai']['port']                 # 你在 setting.yml 中设置的 port (http)
-admin = miraiconf['mirai']['port'] 
-bot = miraicle.Mirai(qq=qq, verify_key=verify_key, port=port)
-bot.set_filter(miraicle.BlacklistFilter('./config/blacklist.json'))
-api=transfurutil.Tailapi("./config/main.conf")
-bot.run()
-
+admin = miraiconf['mirai']['port']
+logging.basicConfig(level=logging.INFO #设置日志输出格式
+                    ,filename=datetime.datetime.now().strftime("%Y-%m-%d")+".log" #log日志输出的文件位置和文件名
+                    ,filemode="w" #文件的写入格式，w为重新写入文件，默认是追加
+                    ,format="%(asctime)s - %(name)s - %(levelname)-9s - %(filename)-8s : %(lineno)s line - %(message)s" #日志输出的格式
+                    # -8表示占位符，让输出左对齐，输出长度都为8位
+                    ,datefmt="%Y-%m-%d %H:%M:%S" #时间输出的格式
+                    )
+try:
+    bot = miraicle.Mirai(qq=qq, verify_key=verify_key,port=port)
+    bot.set_filter(miraicle.BlacklistFilter('./config/blacklist.json'))
+    api=transfurutil.Tailapi("./config/main.conf")
+    bot.run()
+except Exception as e:
+    logging.error(e)
 
