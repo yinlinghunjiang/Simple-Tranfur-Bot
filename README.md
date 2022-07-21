@@ -41,6 +41,8 @@ A simple tranfur QQBot powered by miraicle
 
 ## 更新日志 ##
 
+<details>
+
 20220424更新：
 
 - 优化数据库
@@ -85,8 +87,7 @@ A simple tranfur QQBot powered by miraicle
 
 - 更改部分指令
 
-
-由于本人还很菜，所以有什么代码问题欢迎Issue和pr
+</details>
 
 ## Todo
 - [ ] web管理
@@ -94,5 +95,5 @@ A simple tranfur QQBot powered by miraicle
 ## 声明
 此项目仅用于学习交流，请勿用于非法用途
 
-
+由于本人还很菜，所以有什么代码问题欢迎Issue和pr
 **如果您觉得本项目对您有帮助，也烦请您点个star，您的star是我继续维护下去的动力，谢谢！**
