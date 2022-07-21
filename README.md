@@ -35,6 +35,7 @@ A simple tranfur QQBot powered by miraicle
 - [x] 拉黑
 - [x] 群列表
 - [x] 图床
+- [x] 群广播
 
 </details>
 
@@ -79,6 +80,10 @@ A simple tranfur QQBot powered by miraicle
 20220720更新：
 
 - 错误捕捉，添加日志记录
+
+20220721更新：
+
+- 更改部分指令
 
 
 由于本人还很菜，所以有什么代码问题欢迎Issue和pr

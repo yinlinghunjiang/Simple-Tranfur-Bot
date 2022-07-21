@@ -5,6 +5,7 @@ import signutil
 import transfurutil
 import logging
 import datetime
+import re
 def permutil(qq:str,req:int):
     try:
         foo = ConfigParser()
@@ -34,14 +35,14 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：精确\n'),miraicle.Image(url=thumb)])
-        if msg.plain in [msg.plain.split(" ")[0]+" 期每日鉴毛"]:
-            json_raw = api.DailyFursuitByID(msg.plain.split(" ")[0])
+        if msg.plain in ["第"+re.findall('\\d+',msg.plain)[0]+"期每日鉴毛"]:
+            json_raw = api.DailyFursuitByID(re.findall('\d+',msg.plain)[0])
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Image(url=thumb)])
-        if msg.plain in [msg.plain.split(" ")[0]+" 的每日鉴毛"]:
-            json_raw = api.DailyFursuitByName(msg.plain.split(" ")[0])
+        if msg.plain in [msg.plain[0:msg.plain.rfind('的')]+"的每日鉴毛"]:
+            json_raw = api.DailyFursuitByName(msg.plain[0:msg.plain.rfind('的')])
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
@@ -87,7 +88,7 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
             thumb=json_raw['data']['url']
             bot.send_group_msg(group=msg.group, msg=[miraicle.Image(url=thumb)])
     
-        if msg.plain in [".lists",".群列表"]:
+        if msg.plain in [".群列表"]:
             if permutil(msg.sender,5) == True:
                     groups={}
                     rawdata=bot.group_list()
@@ -102,17 +103,6 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
                     bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('已加入的群聊:\n'+string)])
             else:
                 bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限＝5')])
-        if msg.plain.startswith(".broadcast "):
-            message=msg.plain.split(" ")[1]
-            if permutil(msg.sender,4) == True:
-                rawdata=bot.group_list()
-                for i in range(0,10001,1):
-                    try:
-                        bot.send_group_msg(group=rawdata['data'][i]['id'], msg=[miraicle.Plain(message)])
-                    except:
-                        break
-            else:
-                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限＝4')])
     except KeyError as er:
         helper = ConfigParser()
         helper.read('./config/main.conf', encoding='UTF-8')
@@ -124,6 +114,17 @@ def hello_to_friend(bot: miraicle.Mirai, msg: miraicle.FriendMessage):
         helper = ConfigParser()
         helper.read('./config/main.conf', encoding='UTF-8')
         bot.send_friend_msg(qq=msg.sender, msg=[miraicle.At(msg.sender),helper['mirai']['help']])
+    if msg.plain.startswith(".broadcast ") or msg.plain.startswith(".广播 "):
+            message=msg.plain.split(" ")[1]
+            if permutil(msg.sender,4) == True:
+                rawdata=bot.group_list()
+                for i in range(0,10001,1):
+                    try:
+                        bot.send_group_msg(group=rawdata['data'][i]['id'], msg=[miraicle.Plain(message)])
+                    except:
+                        break
+            else:
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限＝4')])
 @miraicle.Mirai.filter('BlacklistFilter')
 def blacklist(bot: miraicle.Mirai, msg: miraicle.GroupMessage, flt: miraicle.BlacklistFilter):
     try:
