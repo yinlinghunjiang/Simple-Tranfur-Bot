@@ -87,6 +87,10 @@ A simple tranfur QQBot powered by miraicle
 
 - 更改部分指令
 
+20220724更新：
+
+- 更改上个Merge中的Bug
+
 </details>
 
 ## Todo

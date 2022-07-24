@@ -90,14 +90,14 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
     
         if msg.plain in [".群列表"]:
             if permutil(msg.sender,5) == True:
-             output=""
-             buffer=bot.group_list()
-             for i in range(0,len(buffer["data"])):
-              output+=buffer["data"][i]["name"]+"("+str(buffer["data"][i]["id"])+")"
-              output+='\t'
-              output+=buffer["data"][i]["permission"]
-              output+='\n'
-             bot.send_group_msg(msg.group, msg=[miraicle.Plain('已加入的群聊:\n'+output)])
+                output=""
+                buffer=bot.group_list()
+                for i in range(0,len(buffer["data"])):
+                    output+=buffer["data"][i]["name"]+"("+str(buffer["data"][i]["id"])+")"
+                    output+='\t'
+                    output+=buffer["data"][i]["permission"]
+                    output+='\n'
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('已加入的群聊:\n'+output)])
             else:
              bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('权限不足，执行该命令需要权限＝5')])
     except KeyError as er:
@@ -113,9 +113,10 @@ def hello_to_friend(bot: miraicle.Mirai, msg: miraicle.FriendMessage):
         bot.send_friend_msg(qq=msg.sender, msg=[miraicle.At(msg.sender),helper['mirai']['help']])
     if msg.plain.startswith(".broadcast ") or msg.plain.startswith(".广播 "):
             message=msg.plain.split(" ")[1]
+    
             if permutil(msg.sender,4) == True:
                 rawdata=bot.group_list()
-                for i in range(0,10001,1):
+                for i in range(0,len(rawdata["data"])):
                     try:
                         bot.send_group_msg(group=rawdata['data'][i]['id'], msg=[miraicle.Plain(message)])
                     except:
