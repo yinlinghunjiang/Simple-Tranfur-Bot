@@ -1,11 +1,15 @@
 import miraicle
 from configparser import ConfigParser# 读取配置, 加载配置项
-import blacklistsutil
-import signutil
-import transfurutil
+# import blacklistsutil
+# import signutil
+# import transfurutil
 import logging
 import datetime
 import re
+import json
+from plugin import blacklistsutil
+from plugin import signutil
+from plugin import transfurutil
 def permutil(qq:str,req:int):
     try:
         foo = ConfigParser()
@@ -28,13 +32,13 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
-            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：模糊\n'),miraicle.Image(url=thumb)])
+            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:{}\n毛毛名字：{}\n搜索方法：模糊\n').format(str(furid),name),miraicle.Image(url=thumb)])
         if msg.plain in ["找毛图 "+msg.plain.split(" ")[1]]:
             json_raw = api.getFursuitByID(msg.plain.split(" ")[1])
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
-            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：精确\n'),miraicle.Image(url=thumb)])
+            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:{}\n毛毛名字：{}\n搜索方法：精确\n').format(str(furid),name),miraicle.Image(url=thumb)])
         if msg.plain in ["第"+re.findall('\\d+',msg.plain)[0]+"期每日鉴毛"]:
             json_raw = api.DailyFursuitByID(re.findall('\d+',msg.plain)[0])
             furid = json_raw['data']['id']
@@ -55,23 +59,34 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
                 level=blacklistsutil.blacklist(qq)[0]
                 time=blacklistsutil.blacklist(qq)[1]
                 reason=blacklistsutil.blacklist(qq)[2]
-                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('查询QQ：'+qq+"\n等级："+str(level)+"\n上黑时间："+time+"\n上黑原因："+reason)])
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('查询QQ：{}\n等级：{}\n上黑时间：{}\n上黑原因：{}'+reason).format(qq,str(level),time,reason)])
             except IndexError as outoflisterror:
                 notfound=blacklistsutil.blacklist(qq)[0]
-                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('查询QQ：'+qq+"\n"+notfound)])
+                bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('查询QQ：{}\n{}').format(qq,notfound)])
         if msg.plain.startswith(".upload "):
             if permutil(msg.sender,2) == True:
                 if msg.first_image != None:
                     bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(" 上传完毕: \n"+str(msg.images[0])[51:len(str(msg.images[0]))-1])])
             else:
                 bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 权限不足，执行该命令需要权限≥2')])
+        if msg.plain.startswith(".me"):
+            try:
+                with open("./data/"+str(msg.sender)+".json","r",errors='ignore') as f:
+                    data2 = json.load(f)
+                    coin=data2['coin']
+                    signtimes=data2['sign_times']
+                    last_sign=data2['last_sign']
+                    f.close()
+                    bot.send_group_msg(group=msg.group, msg=[miraicle.At(qq=msg.sender),miraicle.Plain("\n---我的信息---\n昵称:{}\n金币数:{}\n签到次数:{}".format(bot.member_profile(msg.group, msg.sender)['nickname'],coin,signtimes))])
+            except:
+                bot.send_group_msg(group=msg.group, msg=[miraicle.At(qq=msg.sender),miraicle.Plain("未找到您的信息，请签到后重试。")])
     except IndexError as e:
         if msg.plain in ['来只毛','.transfur']:
             json_raw=api.getFursuitRand()
             furid = json_raw['data']['id']
             name=json_raw['data']['name']
             thumb=json_raw['data']['url']
-            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:'+str(furid)+'\n毛毛名字：'+name+'\n搜索方法：全局随机\n'),miraicle.Image(url=thumb)])
+            bot.send_group_msg(group=msg.group, msg=[miraicle.Plain('--- 每日吸毛 Bot ---\n今天你吸毛了嘛？\nFurID:{}\n毛毛名字：{}\n搜索方法：全局随机\n').format(str(furid),name),miraicle.Image(url=thumb)])
         if msg.plain in ['签到','.签到','/签到','~签到']:
             raw=signutil.signup(msg.sender)
             if raw[0] == 'Already signed':
@@ -80,7 +95,7 @@ def hello_to_group(bot: miraicle.Mirai, msg: miraicle.GroupMessage):
                 coin=raw[0]
                 signtimes=raw[1]
                 last_sign=raw[2]
-                bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain('\n--- 签到成功 ---\n爪币数:'+str(coin)+'\n签到次数:'+str(signtimes)+"\n签到时间:"+last_sign)])
+                bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain('\n--- 签到成功 ---\n爪币数:{}\n签到次数:{}\n签到时间:{}').format(str(coin),str(signtimes),last_sign)])
         if msg.plain in ["每日鉴毛"]:
             json_raw = api.DailyFursuitRand()
             furid = json_raw['data']['id']
@@ -126,14 +141,14 @@ def hello_to_friend(bot: miraicle.Mirai, msg: miraicle.FriendMessage):
 @miraicle.Mirai.filter('BlacklistFilter')
 def blacklist(bot: miraicle.Mirai, msg: miraicle.GroupMessage, flt: miraicle.BlacklistFilter):
     try:
-        if msg.plain in ["拉黑 "+msg.plain.split(" ")[1]]:
+        if msg.plain in [".拉黑 "+msg.plain.split(" ")[1]]:
             if permutil(msg.sender,4) == True:
                     qq=msg.plain.split(" ")[1]
                     flt.append(qq)
                     bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 添加成功。')])
             else:
                 bot.send_group_msg(group=msg.group, msg=[miraicle.At(msg.sender),miraicle.Plain(' 权限不足，执行该命令需要权限≥4')])
-        if msg.plain in ["解除拉黑 "+msg.plain.split(" ")[1]]:
+        if msg.plain in [".解除拉黑 "+msg.plain.split(" ")[1]]:
             if permutil(msg.sender,4) == True:
                     qq=msg.plain.split(" ")[1]
                     flt.remove(qq)

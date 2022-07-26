@@ -91,6 +91,11 @@ A simple tranfur QQBot powered by miraicle
 
 - 更改上个Merge中的Bug
 
+20220726更新：
+
+- 整理结构树，格式化代码
+
+
 </details>
 
 ## Todo
